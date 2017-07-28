@@ -80,5 +80,19 @@ namespace NBilard
             _pobj.CheckPocket(sx, sy, sx, 1, 0, 1).ShouldBe(Pocket.GP);
             _pobj.CheckPocket(sx, sy, sx, 1, 0, -1).ShouldBe(Pocket.DP);
         }
+
+        [Test]
+        public void SampleTests_1_1()
+        {
+            _pobj.CheckPocket(4, 3, 3, 0, 1, 1).ShouldBe(Pocket.GP);
+            _pobj.CheckPocket(4, 2, 3, 0, 1, 1).ShouldBe(Pocket.NIE);
+        }
+
+        [Test]
+        public void SampleTests_m1_1()
+        {
+            _pobj.CheckPocket(4, 3, 3, 0, -1, 1).ShouldBe(Pocket.GL);
+            _pobj.CheckPocket(4, 2, 3, 0, -1, 1).ShouldBe(Pocket.NIE);
+        }
     }
 }

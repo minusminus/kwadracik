@@ -102,7 +102,8 @@ namespace Bilard
 
             //i pozostale
             double a = (double) wy/(double) wx;
-            double b = py - a*px;   
+            double b = py - a*px;
+            int kx = sx/2;
 
             return Pocket.NIE;
         }
