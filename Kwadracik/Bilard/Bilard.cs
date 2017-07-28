@@ -19,18 +19,24 @@ namespace Bilard
             return (x%(sx/2) == 0) && (y%sy == 0);
         }
 
-        private Pocket SpecifyPocket(int sx, int sy, int x, int y)
+        public Pocket SpecifyPocket(int sx, int sy, int x, int y)
         {
-            
+            Pocket res = Pocket.GL; //domyslnie w lewej gornej
+            //if (x%(2*sx) == 0) res = Pocket.GL;
+            if (x > 0)
+            {
+                if (x%sx == 0) res = Pocket.GP; //prawej
+                else if (x%(sx/2) == 0) res = Pocket.GS; //srodkowej
+            }
+            if (y%(2*sy) == 0) res += 3;    //dolne kieszenie
+            return res;
         }
 
         public Pocket CheckPocket(int sx, int sy, int px, int py, int wx, int wy)
         {
             //od razu w luzie
             if (IsMeshPoint(sx, sy, px, py))
-            {
-                
-            }
+                return SpecifyPocket(sx, sy, px, py);
 
             //przypadki pionowe
 
