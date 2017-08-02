@@ -84,7 +84,8 @@ namespace NBilard
         [Test]
         public void SampleTests_1_1()
         {
-            _pobj.CheckPocket(4, 3, 3, 0, 1, 1).ShouldBe(Pocket.GP);
+            _pobj.CheckPocket(4, 3, 3, 0, 1, 1).ShouldBe(Pocket.GS);
+            _pobj.CheckPocket(4, 3, 3, 0, 1, 3).ShouldBe(Pocket.GP);
             _pobj.CheckPocket(4, 2, 3, 0, 1, 1).ShouldBe(Pocket.NIE);
         }
 
@@ -93,6 +94,20 @@ namespace NBilard
         {
             _pobj.CheckPocket(4, 3, 3, 0, -1, 1).ShouldBe(Pocket.GL);
             _pobj.CheckPocket(4, 2, 3, 0, -1, 1).ShouldBe(Pocket.NIE);
+        }
+
+        [Test]
+        public void SampleTests_1_m1()
+        {
+            _pobj.CheckPocket(4, 3, 3, 0, 1, -1).ShouldBe(Pocket.GS);
+            _pobj.CheckPocket(4, 2, 3, 0, 1, -1).ShouldBe(Pocket.NIE);
+        }
+
+        [Test]
+        public void SampleTests_sx4()
+        {
+            _pobj.CheckPocket(4, 1, 1, 0, 2, 1).ShouldBe(Pocket.NIE);
+            _pobj.CheckPocket(4, 2, 1, 0, 2, 1).ShouldBe(Pocket.NIE);
         }
     }
 }

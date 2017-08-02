@@ -101,11 +101,71 @@ namespace Bilard
             }
 
             //i pozostale
-            double a = (double) wy/(double) wx;
-            double b = py - a*px;
-            int kx = sx/2;
+            //double a = (double) wy/(double) wx;
+            //double b = py - a*px;
+            //long kx = sx/2;
+            //long lcm;
+            //if (px >= kx)
+            //    lcm = NumbersTheory.LCM(wx, kx - (px - kx));
+            //else
+            //    lcm = NumbersTheory.LCM(wx, kx - px);
 
-            return Pocket.NIE;
+            //jezeli ruch w lewo to odbijamy stol wzgledem srodka
+            bool tablefilppedvertical = (wx < 0);
+            bool tableflippedhorizontal = (wy < 0);
+            if (tablefilppedvertical)
+            {
+                px = (sx/2) + (sx/2 - px);
+                wx = -wx;
+            }
+            if (tableflippedhorizontal)
+            {
+                py = sy - py;
+                wy = -wy;
+            }
+
+            //obliczenia dla ruchu w prawo do gory
+            long mx, my, mp;
+            //napierw do prawej krawedzi siatki
+            long kx = sx/2;
+            if (px >= kx)
+                mp = NumbersTheory.LCM(wx, kx - (px - kx))/wx;
+            else
+                mp = NumbersTheory.LCM(wx, kx - px)/wx;
+            mx = px + wx*mp;
+            my = py + wy*mp;
+            //jezeli po przeskalowaniu punkt jest wewnatrz oryginalnego stolu, to skalowanie w pionie
+            if (!IsMeshPoint(sx, sy, (int) mx, (int) my) && (wy*mp < sy))
+            {
+                if (py < sy)
+                    mp = NumbersTheory.LCM(wy, sy - py)/wy;
+                else
+                    mp = NumbersTheory.LCM(wy, sy)/wy;
+                mx = px + wx*mp;
+                my = py + wy*mp;
+            }
+
+            Pocket res = Pocket.NIE;
+            if (IsMeshPoint(sx, sy, (int) mx, (int) my))
+                res = SpecifyPocket(sx, sy, (int) mx, (int) my);
+            if (tablefilppedvertical)
+            {   //ruch byl w lewo - stol byl odbity pionowo -> zamieniamy luzy lewe z prawymi
+                if (res == Pocket.GL) res = Pocket.GP;
+                else if (res == Pocket.GP) res = Pocket.GL;
+                else if (res == Pocket.DL) res = Pocket.DP;
+                else if (res == Pocket.DP) res = Pocket.DL;
+            }
+            if (tableflippedhorizontal)
+            {   //ruch byl w dol - stol odbity poziomo -> zmieniamy luzy gorne i dolne
+                if (res == Pocket.GL) res = Pocket.DL;
+                else if (res == Pocket.GP) res = Pocket.DP;
+                else if (res == Pocket.GS) res = Pocket.DS;
+                else if (res == Pocket.DL) res = Pocket.GL;
+                else if (res == Pocket.DP) res = Pocket.GP;
+                else if (res == Pocket.DS) res = Pocket.GS;
+            }
+
+            return res;
         }
     }
 }
