@@ -146,5 +146,11 @@ namespace NBilard
             _pobj.CheckPocket(1000000, 954271, 1, 1, 1, 1).ShouldBe(Pocket.DS);
             _pobj.CheckPocket(982214, 852841, 12, 12, -21, 87).ShouldBe(Pocket.DL);
         }
+
+        [Test]
+        public void SpecialTestForDebug()
+        {
+            _pobj.CheckPocket(1000, 973, 573, 123, 53, -123).ShouldBe(Pocket.DS);
+        }
     }
 }

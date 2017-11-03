@@ -100,15 +100,7 @@ namespace Bilard
                 return Pocket.NIE;
             }
 
-            //i pozostale
-            //double a = (double) wy/(double) wx;
-            //double b = py - a*px;
-            //long kx = sx/2;
-            //long lcm;
-            //if (px >= kx)
-            //    lcm = NumbersTheory.LCM(wx, kx - (px - kx));
-            //else
-            //    lcm = NumbersTheory.LCM(wx, kx - px);
+            //i pozostale, liczone dla rucho w prawo do gory, inne warianty trzeba przeksztalcic
 
             //jezeli ruch w lewo to odbijamy stol wzgledem srodka
             bool tablefilppedvertical = (wx < 0);
@@ -125,29 +117,44 @@ namespace Bilard
             }
 
             //obliczenia dla ruchu w prawo do gory
-            long mx, my, mp;
-            //napierw do prawej krawedzi siatki
-            long kx = sx/2;
-            if (px >= kx)
-                mp = NumbersTheory.LCM(wx, kx - (px - kx))/wx;
-            else
-                mp = NumbersTheory.LCM(wx, kx - px)/wx;
-            mx = px + wx*mp;
-            my = py + wy*mp;
-            //jezeli po przeskalowaniu punkt jest wewnatrz oryginalnego stolu, to skalowanie w pionie
-            if (!IsMeshPoint(sx, sy, (int) mx, (int) my) && (wy*mp < sy))
-            {
-                if (py < sy)
-                    mp = NumbersTheory.LCM(wy, sy - py)/wy;
-                else
-                    mp = NumbersTheory.LCM(wy, sy)/wy;
-                mx = px + wx*mp;
-                my = py + wy*mp;
-            }
-
             Pocket res = Pocket.NIE;
-            if (IsMeshPoint(sx, sy, (int) mx, (int) my))
-                res = SpecifyPocket(sx, sy, (int) mx, (int) my);
+
+            int a, b, c;
+            a = sx*wy;
+            b = wx*py - wy*px;
+            c = sy*wx;
+            int n, m, p, q;
+            n = Math.DivRem(a, c, out m);
+            p = Math.DivRem(b, c, out q);
+
+            //analizowane 4 przypadki A/C i B/C
+            int rx = -1, ry = -1;
+            if ((m == 0) && (q == 0))
+            {
+                rx = sx;
+                ry = (n + p)*sy;
+            }
+            else if ((m == 0) && (q != 0))
+            {
+                res = Pocket.NIE;
+            }
+            else if ((m != 0) && (q == 0))
+            {
+                int coefa = (int) NumbersTheory.LCM((long) m, (long) c)/c;
+                int t = (coefa*sx + px)/wx;
+                rx = px + t*wx;
+                ry = py + t*wy;
+            }
+            else if ((m != 0) && (q != 0))
+            {
+
+            }
+            if(rx > -1)
+                if (IsMeshPoint(sx, sy, rx, ry))
+                    res = SpecifyPocket(sx, sy, rx, ry);
+
+
+            //korekta wyniku jezeli stol byl odbijany
             if (tablefilppedvertical)
             {   //ruch byl w lewo - stol byl odbity pionowo -> zamieniamy luzy lewe z prawymi
                 if (res == Pocket.GL) res = Pocket.GP;
