@@ -140,16 +140,32 @@ namespace Bilard
             }
             else if ((m != 0) && (q == 0))
             {
-                int coefa = (int) NumbersTheory.LCM((long) m, (long) c)/c;
+                int coefa = (int)NumbersTheory.LCM((long)m, (long)c);
                 int t = (coefa*sx + px)/wx;
                 rx = px + t*wx;
                 ry = py + t*wy;
             }
             else if ((m != 0) && (q != 0))
             {
-
+                long l, k;
+                int d = (int)NumbersTheory.GCDExt(m, q, out l, out k);
+                if (q%d == 0)
+                {
+                    int x0 = ((int) l)*(q/d)%c;
+                    int coefa = x0;
+                    for (int i = 0; i < d; i++)
+                    {
+                        int xx = (x0 + i * (c / d)) % c;
+                        if (xx < coefa) coefa = xx;
+                    }
+                    int t = (coefa * sx + px) / wx;
+                    rx = px + t * wx;
+                    ry = py + t * wy;
+                }
+                else
+                    res = Pocket.NIE;
             }
-            if(rx > -1)
+            if (rx > -1)
                 if (IsMeshPoint(sx, sy, rx, ry))
                     res = SpecifyPocket(sx, sy, rx, ry);
 

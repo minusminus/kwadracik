@@ -61,6 +61,31 @@ namespace NumberTheory
         }
 
         /// <summary>
+        /// rozszerzony najwiekszy wspólny dzielnik
+        /// d = gcd(a,b) = a*l + b*k
+        /// 
+        /// na podst Cormen str 881
+        /// i "Algorytmika praktyczna" str 140
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="l"></param>
+        /// <param name="k"></param>
+        /// <returns></returns>
+        public static long GCDExt(long a, long b, out long l, out long k)
+        {
+            if (a == 0)
+            {
+                l = 0;
+                k = 1;
+                return b;
+            }
+            long d = GCDExt(b%a, a, out k, out l);
+            l -= (b/a)*k;
+            return d;
+        }
+
+        /// <summary>
         /// najmniejsza wspolna wielokrotnosc
         /// https://en.wikipedia.org/wiki/Least_common_multiple
         /// </summary>
