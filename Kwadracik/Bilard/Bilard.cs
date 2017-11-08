@@ -120,18 +120,22 @@ namespace Bilard
             Pocket res = Pocket.NIE;
 
             int a, b, c;
-            a = sx*wy;
+            a = (sx/2)*wy;
             b = wx*py - wy*px;
             c = sy*wx;
             int n, m, p, q;
-            n = Math.DivRem(a, c, out m);
-            p = Math.DivRem(b, c, out q);
+            //n = Math.DivRem(a, c, out m);
+            //p = Math.DivRem(b, c, out q);
+            n = a/c;
+            m = (int)NumbersTheory.Mod(a, c);
+            p = b/c;
+            q = (int) NumbersTheory.Mod(b, c);
 
             //analizowane 4 przypadki A/C i B/C
             int rx = -1, ry = -1;
             if ((m == 0) && (q == 0))
             {
-                rx = sx;
+                rx = sx/2;
                 ry = (n + p)*sy;
             }
             else if ((m == 0) && (q != 0))
@@ -140,15 +144,16 @@ namespace Bilard
             }
             else if ((m != 0) && (q == 0))
             {
-                int coefa = (int)NumbersTheory.LCM((long)m, (long)c);
-                int t = (coefa*sx + px)/wx;
+                int coefa = c/(int) NumbersTheory.GCDBinary((long) m, (long) c);
+                int t = (coefa*(sx/2) - px)/wx;
                 rx = px + t*wx;
                 ry = py + t*wy;
             }
             else if ((m != 0) && (q != 0))
             {
                 long l, k;
-                int d = (int)NumbersTheory.GCDExt(m, -q, out l, out k);
+                //int d = (int)NumbersTheory.GCDExt(m, -q, out l, out k);
+                int d = (int)NumbersTheory.GCDExt(m, c, out l, out k);
                 if (-q%d == 0)
                 {
                     //int x0 = (((int) l)*(-q/d))%c;
@@ -160,7 +165,7 @@ namespace Bilard
                         int xx = (int)NumbersTheory.Mod(x0 + i * (c / d), c);
                         if (xx < coefa) coefa = xx;
                     }
-                    int t = (coefa*sx + px)/wx;
+                    int t = (coefa*(sx/2) - px)/wx;
                     rx = px + t * wx;
                     ry = py + t * wy;
                 }

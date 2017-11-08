@@ -151,7 +151,10 @@ namespace NBilard
         public void SpecialTestForDebug()
         {
             //_pobj.CheckPocket(1000, 973, 573, 123, 53, -123).ShouldBe(Pocket.DS);
-            _pobj.CheckPocket(4, 3, 1, 0, 1, 1).ShouldBe(Pocket.GP);
+            //_pobj.CheckPocket(4, 3, 1, 0, 1, 1).ShouldBe(Pocket.GP);
+            //_pobj.CheckPocket(4, 3, 3, 0, 1, 1).ShouldBe(Pocket.GS);
+            //_pobj.CheckPocket(4, 3, 3, 0, -1, 1).ShouldBe(Pocket.GL);
+            _pobj.CheckPocket(4, 3, 3, 0, 1, 3).ShouldBe(Pocket.GP);
         }
     }
 }
