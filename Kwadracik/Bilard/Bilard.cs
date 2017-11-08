@@ -148,17 +148,19 @@ namespace Bilard
             else if ((m != 0) && (q != 0))
             {
                 long l, k;
-                int d = (int)NumbersTheory.GCDExt(m, q, out l, out k);
-                if (q%d == 0)
+                int d = (int)NumbersTheory.GCDExt(m, -q, out l, out k);
+                if (-q%d == 0)
                 {
-                    int x0 = ((int) l)*(q/d)%c;
+                    //int x0 = (((int) l)*(-q/d))%c;
+                    int x0 = (int)NumbersTheory.Mod((int)l * (-q / d), c);
                     int coefa = x0;
                     for (int i = 0; i < d; i++)
                     {
-                        int xx = (x0 + i * (c / d)) % c;
+                        //int xx = (x0 + i*(c/d))%c;
+                        int xx = (int)NumbersTheory.Mod(x0 + i * (c / d), c);
                         if (xx < coefa) coefa = xx;
                     }
-                    int t = (coefa * sx + px) / wx;
+                    int t = (coefa*sx + px)/wx;
                     rx = px + t * wx;
                     ry = py + t * wy;
                 }

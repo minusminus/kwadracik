@@ -150,7 +150,8 @@ namespace NBilard
         [Test]
         public void SpecialTestForDebug()
         {
-            _pobj.CheckPocket(1000, 973, 573, 123, 53, -123).ShouldBe(Pocket.DS);
+            //_pobj.CheckPocket(1000, 973, 573, 123, 53, -123).ShouldBe(Pocket.DS);
+            _pobj.CheckPocket(4, 3, 1, 0, 1, 1).ShouldBe(Pocket.GP);
         }
     }
 }

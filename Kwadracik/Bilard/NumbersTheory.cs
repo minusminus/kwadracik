@@ -12,6 +12,18 @@ namespace NumberTheory
     public class NumbersTheory
     {
         /// <summary>
+        /// poprawna matematycznie operacja modulo
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static long Mod(long a, long b)
+        {
+            long r = a%b;
+            return r < 0 ? r + b : r;
+        }
+
+        /// <summary>
         /// największy wspólny dzielnik
         /// https://en.wikipedia.org/wiki/Binary_GCD_algorithm
         /// </summary>
@@ -80,7 +92,8 @@ namespace NumberTheory
                 k = 1;
                 return b;
             }
-            long d = GCDExt(b%a, a, out k, out l);
+            //long d = GCDExt(b%a, a, out k, out l);
+            long d = GCDExt(Mod(b, a), a, out k, out l);
             l -= (b/a)*k;
             return d;
         }
