@@ -135,8 +135,18 @@ namespace Bilard
             int rx = -1, ry = -1;
             if ((m == 0) && (q == 0))
             {
-                rx = sx/2;
-                ry = (n + p)*sy;
+                //rx = sx/2;
+                //ry = (n + p)*sy;
+                ////b=an+p i z podstawienia pod b w wyliczeniach t jest a=(pC+B)/(A-nC)
+                //int coefa = (p * c + b) / (a - n * c);
+
+                //t > 0 -> a > px/w
+                int coefa = px/(sx/2) + 1;
+                if (px%(sx/2) != 0) coefa++;
+
+                int t = (coefa * (sx / 2) - px) / wx;
+                rx = px + t * wx;
+                ry = py + t * wy;
             }
             else if ((m == 0) && (q != 0))
             {
@@ -144,10 +154,10 @@ namespace Bilard
             }
             else if ((m != 0) && (q == 0))
             {
-                int coefa = c/(int) NumbersTheory.GCDBinary((long) m, (long) c);
-                int t = (coefa*(sx/2) - px)/wx;
-                rx = px + t*wx;
-                ry = py + t*wy;
+                int coefa = c / (int)NumbersTheory.GCDBinary((long)m, (long)c);
+                int t = (coefa * (sx / 2) - px) / wx;
+                rx = px + t * wx;
+                ry = py + t * wy;
             }
             else if ((m != 0) && (q != 0))
             {
