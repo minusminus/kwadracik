@@ -57,50 +57,11 @@ namespace Bilard
 
             //przypadki poziome
             if (wy == 0)
-            {
-                if (py == 0)
-                {
-                    if (wx > 0)
-                    {
-                        if (px < sx/2) return Pocket.DS;
-                        return Pocket.DP;
-                    }
-                    if (px > sx / 2) return Pocket.DS;
-                    return Pocket.DL;
-                }
-                if (py == sy)
-                {
-                    if (wx > 0)
-                    {
-                        if (px < sx / 2) return Pocket.GS;
-                        return Pocket.GP;
-                    }
-                    if (px > sx / 2) return Pocket.GS;
-                    return Pocket.GL;
-                }
-                return Pocket.NIE;
-            }
+                return GetHorizontalPocket(sx, sy, px, py, wx);
 
             //przypadki pionowe
             if (wx == 0)
-            {
-                if (px == 0)
-                {
-                    if (wy > 0) return Pocket.GL;
-                    return Pocket.DL;
-                }
-                if (px == sx/2)
-                {
-                    if (wy > 0) return Pocket.GS;
-                    return Pocket.DS;
-                }
-                if (px == sx)
-                {
-                    if (wy > 0) return Pocket.GP;
-                    return Pocket.DP;
-                }
-                return Pocket.NIE;
-            }
+                return GetVerticalPocket(sx, px, wy);
 
             //i pozostale, liczone dla rucho w prawo do gory, inne warianty trzeba przeksztalcic
 
@@ -108,18 +69,9 @@ namespace Bilard
             bool tablefilppedvertical = (wx < 0);
             bool tableflippedhorizontal = (wy < 0);
             if (tablefilppedvertical)
-            {
-                px = (sx/2) + (sx/2 - px);
-                wx = -wx;
-            }
+                FlipVertical(sx, ref px, ref wx);
             if (tableflippedhorizontal)
-            {
-                py = sy - py;
-                wy = -wy;
-            }
-
-            //obliczenia dla ruchu w prawo do gory
-            Pocket res = Pocket.NIE;
+                FlipHorizontal(sy, ref py, ref wy);
 
             //przeskalowanie wektora do najmniejszego mozliwego
             int wgcd = (int) NumbersTheory.GCDBinary(wx, wy);
@@ -131,33 +83,26 @@ namespace Bilard
             b = wx*py - wy*px;
             c = sy*wx;
             long n, m, p, q;
-            //n = Math.DivRem(a, c, out m);
-            //p = Math.DivRem(b, c, out q);
             n = a/c;
             m = NumbersTheory.Mod(a, c);
             p = b/c;
             q = NumbersTheory.Mod(b, c);
 
             //analizowane 4 przypadki A/C i B/C
-            long rx = -1, ry = -1;
+            bool found = true;
+            long coefa = 0;
             if ((m == 0) && (q == 0))
             {
                 //t > 0 -> a > px/w
-                long coefa = px / (sx / 2) + 1;
-                long t = (coefa * (sx / 2) - px) / wx;
-                rx = px + t * wx;
-                ry = py + t * wy;
+                coefa = px / (sx / 2) + 1;
             }
             else if ((m == 0) && (q != 0))
             {
-                res = Pocket.NIE;
+                found = false;
             }
             else if ((m != 0) && (q == 0))
             {
-                long coefa = c / NumbersTheory.GCDBinary(m, c);
-                long t = (coefa * (sx / 2) - px) / wx;
-                rx = px + t * wx;
-                ry = py + t * wy;
+                coefa = c / NumbersTheory.GCDBinary(m, c);
             }
             else if ((m != 0) && (q != 0))
             {
@@ -165,45 +110,113 @@ namespace Bilard
                 long d = NumbersTheory.GCDExt(m, c, out l, out k);
                 if (-q%d == 0)
                 {
-                    long x0 = NumbersTheory.Mod(l * (-q / d), c);
-                    long coefa = x0;
-                    for (int i = 0; i < d; i++)
+                    long x0 = NumbersTheory.Mod(l*(-q/d), c);
+                    coefa = x0;
+                    for (long i = 1; i < d; i++) //zgodnie z alg z Cormena powinno byc od 0, ale element 0 jest obliczony wczesniej
                     {
-                        //int xx = (x0 + i*(c/d))%c;
-                        long xx = NumbersTheory.Mod(x0 + i * (c / d), c);
+                        long xx = NumbersTheory.Mod(x0 + i*(c/d), c);
                         if (xx < coefa) coefa = xx;
                     }
-                    long t = (coefa*(sx/2) - px)/wx;
-                    rx = px + t * wx;
-                    ry = py + t * wy;
                 }
                 else
-                    res = Pocket.NIE;
+                    found = false;
             }
-            if (rx > -1)
+            //ustalenie punktu kratowego i luzy
+            Pocket res = Pocket.NIE;
+            if (found)
+            {
+                long t = (coefa * (sx / 2) - px) / wx;
+                long rx = px + t * wx;
+                long ry = py + t * wy;
                 if (IsMeshPoint(sx, sy, rx, ry))
                     res = SpecifyPocket(sx, sy, rx, ry);
+            }
 
 
             //korekta wyniku jezeli stol byl odbijany
-            if (tablefilppedvertical)
-            {   //ruch byl w lewo - stol byl odbity pionowo -> zamieniamy luzy lewe z prawymi
-                if (res == Pocket.GL) res = Pocket.GP;
-                else if (res == Pocket.GP) res = Pocket.GL;
-                else if (res == Pocket.DL) res = Pocket.DP;
-                else if (res == Pocket.DP) res = Pocket.DL;
-            }
-            if (tableflippedhorizontal)
-            {   //ruch byl w dol - stol odbity poziomo -> zmieniamy luzy gorne i dolne
-                if (res == Pocket.GL) res = Pocket.DL;
-                else if (res == Pocket.GP) res = Pocket.DP;
-                else if (res == Pocket.GS) res = Pocket.DS;
-                else if (res == Pocket.DL) res = Pocket.GL;
-                else if (res == Pocket.DP) res = Pocket.GP;
-                else if (res == Pocket.DS) res = Pocket.GS;
-            }
+            if (tablefilppedvertical)   //ruch byl w lewo - stol byl odbity pionowo -> zamieniamy luzy lewe z prawymi
+                res = BackflipVertical(res);
+            if (tableflippedhorizontal) //ruch byl w dol - stol odbity poziomo -> zmieniamy luzy gorne i dolne
+                res = BackflipHorizontal(res);
 
             return res;
+        }
+
+        private Pocket BackflipHorizontal(Pocket res)
+        {
+            if (res == Pocket.GL) res = Pocket.DL;
+            else if (res == Pocket.GP) res = Pocket.DP;
+            else if (res == Pocket.GS) res = Pocket.DS;
+            else if (res == Pocket.DL) res = Pocket.GL;
+            else if (res == Pocket.DP) res = Pocket.GP;
+            else if (res == Pocket.DS) res = Pocket.GS;
+            return res;
+        }
+
+        private Pocket BackflipVertical(Pocket res)
+        {
+            if (res == Pocket.GL) res = Pocket.GP;
+            else if (res == Pocket.GP) res = Pocket.GL;
+            else if (res == Pocket.DL) res = Pocket.DP;
+            else if (res == Pocket.DP) res = Pocket.DL;
+            return res;
+        }
+
+        private void FlipHorizontal(int sy, ref int py, ref int wy)
+        {
+            py = sy - py;
+            wy = -wy;
+        }
+
+        private void FlipVertical(int sx, ref int px, ref int wx)
+        {
+            px = (sx/2) + (sx/2 - px);
+            wx = -wx;
+        }
+
+        private Pocket GetVerticalPocket(int sx, int px, int wy)
+        {
+            if (px == 0)
+            {
+                if (wy > 0) return Pocket.GL;
+                return Pocket.DL;
+            }
+            if (px == sx/2)
+            {
+                if (wy > 0) return Pocket.GS;
+                return Pocket.DS;
+            }
+            if (px == sx)
+            {
+                if (wy > 0) return Pocket.GP;
+                return Pocket.DP;
+            }
+            return Pocket.NIE;
+        }
+
+        private Pocket GetHorizontalPocket(int sx, int sy, int px, int py, int wx)
+        {
+            if (py == 0)
+            {
+                if (wx > 0)
+                {
+                    if (px < sx/2) return Pocket.DS;
+                    return Pocket.DP;
+                }
+                if (px > sx/2) return Pocket.DS;
+                return Pocket.DL;
+            }
+            if (py == sy)
+            {
+                if (wx > 0)
+                {
+                    if (px < sx/2) return Pocket.GS;
+                    return Pocket.GP;
+                }
+                if (px > sx/2) return Pocket.GS;
+                return Pocket.GL;
+            }
+            return Pocket.NIE;
         }
     }
 }
