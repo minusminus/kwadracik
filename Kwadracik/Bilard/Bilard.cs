@@ -14,18 +14,20 @@ namespace Bilard
 
     public class Bilard
     {
-        private bool IsMeshPoint(int sx, int sy, int x, int y)
+        private bool IsMeshPoint(int sx, int sy, long x, long y)
         {
             return (x%(sx/2) == 0) && (y%sy == 0);
         }
 
-        public Pocket SpecifyPocket(int sx, int sy, int x, int y)
+        public Pocket SpecifyPocket(int sx, int sy, long x, long y)
         {
             Pocket res = Pocket.GL; //domyslnie w lewej gornej
-            //if (x%(2*sx) == 0) res = Pocket.GL;
             if (x > 0)
             {
-                if (x%sx == 0) res = Pocket.GP; //prawej
+                if (x%sx == 0)
+                {
+                    if ((x/sx)%2 != 0) res = Pocket.GP; //w prawej dla nieparzystych krat calego stolu (0-lewa, 1-prawa, 2-lewa, 3-prawa, ...)
+                }
                 else if (x%(sx/2) == 0) res = Pocket.GS; //srodkowej
             }
             if (y%(2*sy) == 0) res += 3;    //dolne kieszenie
@@ -119,32 +121,30 @@ namespace Bilard
             //obliczenia dla ruchu w prawo do gory
             Pocket res = Pocket.NIE;
 
-            int a, b, c;
+            //przeskalowanie wektora do najmniejszego mozliwego
+            int wgcd = (int) NumbersTheory.GCDBinary(wx, wy);
+            wx /= wgcd;
+            wy /= wgcd;
+
+            long a, b, c;
             a = (sx/2)*wy;
             b = wx*py - wy*px;
             c = sy*wx;
-            int n, m, p, q;
+            long n, m, p, q;
             //n = Math.DivRem(a, c, out m);
             //p = Math.DivRem(b, c, out q);
             n = a/c;
-            m = (int)NumbersTheory.Mod(a, c);
+            m = NumbersTheory.Mod(a, c);
             p = b/c;
-            q = (int) NumbersTheory.Mod(b, c);
+            q = NumbersTheory.Mod(b, c);
 
             //analizowane 4 przypadki A/C i B/C
-            int rx = -1, ry = -1;
+            long rx = -1, ry = -1;
             if ((m == 0) && (q == 0))
             {
-                //rx = sx/2;
-                //ry = (n + p)*sy;
-                ////b=an+p i z podstawienia pod b w wyliczeniach t jest a=(pC+B)/(A-nC)
-                //int coefa = (p * c + b) / (a - n * c);
-
                 //t > 0 -> a > px/w
-                int coefa = px/(sx/2) + 1;
-                if (px%(sx/2) != 0) coefa++;
-
-                int t = (coefa * (sx / 2) - px) / wx;
+                long coefa = px / (sx / 2) + 1;
+                long t = (coefa * (sx / 2) - px) / wx;
                 rx = px + t * wx;
                 ry = py + t * wy;
             }
@@ -154,28 +154,26 @@ namespace Bilard
             }
             else if ((m != 0) && (q == 0))
             {
-                int coefa = c / (int)NumbersTheory.GCDBinary((long)m, (long)c);
-                int t = (coefa * (sx / 2) - px) / wx;
+                long coefa = c / NumbersTheory.GCDBinary(m, c);
+                long t = (coefa * (sx / 2) - px) / wx;
                 rx = px + t * wx;
                 ry = py + t * wy;
             }
             else if ((m != 0) && (q != 0))
             {
                 long l, k;
-                //int d = (int)NumbersTheory.GCDExt(m, -q, out l, out k);
-                int d = (int)NumbersTheory.GCDExt(m, c, out l, out k);
+                long d = NumbersTheory.GCDExt(m, c, out l, out k);
                 if (-q%d == 0)
                 {
-                    //int x0 = (((int) l)*(-q/d))%c;
-                    int x0 = (int)NumbersTheory.Mod((int)l * (-q / d), c);
-                    int coefa = x0;
+                    long x0 = NumbersTheory.Mod(l * (-q / d), c);
+                    long coefa = x0;
                     for (int i = 0; i < d; i++)
                     {
                         //int xx = (x0 + i*(c/d))%c;
-                        int xx = (int)NumbersTheory.Mod(x0 + i * (c / d), c);
+                        long xx = NumbersTheory.Mod(x0 + i * (c / d), c);
                         if (xx < coefa) coefa = xx;
                     }
-                    int t = (coefa*(sx/2) - px)/wx;
+                    long t = (coefa*(sx/2) - px)/wx;
                     rx = px + t * wx;
                     ry = py + t * wy;
                 }

@@ -86,6 +86,7 @@ namespace NBilard
         {
             _pobj.CheckPocket(4, 3, 3, 0, 1, 1).ShouldBe(Pocket.GS);
             _pobj.CheckPocket(4, 3, 3, 0, 1, 3).ShouldBe(Pocket.GP);
+            _pobj.CheckPocket(4, 3, 3, 0, 2 * 1, 2 * 3).ShouldBe(Pocket.GP);
             _pobj.CheckPocket(4, 2, 3, 0, 1, 1).ShouldBe(Pocket.NIE);
         }
 
@@ -154,7 +155,9 @@ namespace NBilard
             //_pobj.CheckPocket(4, 3, 1, 0, 1, 1).ShouldBe(Pocket.GP);
             //_pobj.CheckPocket(4, 3, 3, 0, 1, 1).ShouldBe(Pocket.GS);
             //_pobj.CheckPocket(4, 3, 3, 0, -1, 1).ShouldBe(Pocket.GL);
-            _pobj.CheckPocket(4, 3, 3, 0, 1, 3).ShouldBe(Pocket.GP);
+            //_pobj.CheckPocket(4, 3, 3, 0, 1, 3).ShouldBe(Pocket.GP);
+            //_pobj.CheckPocket(4, 3, 3, 0, 2*1, 2*3).ShouldBe(Pocket.GP);
+            _pobj.CheckPocket(10000, 8521, 117, 4321, 121, -987).ShouldBe(Pocket.DL);
         }
     }
 }
