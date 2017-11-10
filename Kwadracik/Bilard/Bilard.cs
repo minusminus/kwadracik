@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,6 +7,17 @@ using NumberTheory;
 
 /// <summary>
 /// http://main.edu.pl/pl/archive/pa/2005/bil
+///
+/// Rozwiazanie dla ruchu w prawo do gory:
+/// Stol odbijamy wzdluz krawedzi tworzac siatke "punktow kratowych" znajdujacych sie w miejsach luz.
+/// Teraz trzeba okreslic do ktorego punktu kratowego R dotrze bila poruszajac sie po prostej wzdluz wektora ruchu (moze nie dotrzec do zadnego)
+/// Rx = px + t*vx = a*w
+/// Ry = py + t*vy = b*h
+/// Szukamy wspolczynnika skalujacego t, a i b sa mnoznikami szerokosci i wysokosci kratownicy.
+/// Z tych rownan wyznaczamy t i porownujemy budujac zaleznosc b od a, ktora mozna doprowadzic do postaci:
+/// b = a(A/C) + (B/C)
+/// teraz nalezy rozwazyc 4 przypadki A/C i B/C (gdy jest lub nie ma reszty z dzielenia) wiedzac ze a i b sa liczbami calkowitymi dodatnimi
+/// wyliczenia sa w pliku Docs\bilard.jpg 
 /// </summary>
 namespace Bilard
 {
